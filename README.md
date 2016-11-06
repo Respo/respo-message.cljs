@@ -1,41 +1,48 @@
 
-Stack Workflow
+Respo Message
 ----
 
-Personal project template based on Respo, Boot, ClojureScript, Cirru Sepal...
+> Message component for Respo apps.
 
-### Develop
+Demo http://repo.respo.site/message/
 
-Genetate HTML(`target/index.html`), watch and build ClojureScript:
+### Usage
 
-```bash
-boot dev!
+[![Clojars Project](https://img.shields.io/clojars/v/respo/message.svg)](https://clojars.org/respo/message)
+
+```clojure
+[respo/message "0.1.0"]
 ```
 
-Compile and optimize ClojureScript, generate HTML with revision:
+You will need these functions:
 
-```bash
-boot build-advanced
-export boot_deps=`boot show -c`
-planck -c $boot_deps:src/ -i render.cljs
+```clojure
+respo-message.updater/add-one
+respo-message.updater/remove-one
+respo-message.comp.msg-list/comp-msg-list
 ```
 
-Package jar file and install locally:
+For the store part, it's supposed to have the field `:messages` and two actions:
 
-```bash
-boot build
+```clojure
+(defonce store-ref (atom {:messages []}))
+
+(defn dispatch! [op op-data]
+  (println "dispatch!" op op-data)
+  (let [op-id (id!)
+        new-store (case op
+                    :message/add
+                      (add-one @store-ref op
+                       {:id op-id, :kind (rand-nth kinds), :text (rand-nth words)})
+                    :message/remove (remove-one @store-ref op op-data)
+                    @store-ref)]
+    (reset! store-ref new-store)))
 ```
 
-Package jar file and send to Clojars:
+Mounting the component into tree is simpler:
 
-```bash
-boot deploy
-```
-
-Get ClojureScript code:
-
-```bash
-boot generate-code
+```clojure
+(comp-msg-list (:messages store)))))
 ```
 
 ### Develop

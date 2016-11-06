@@ -1,24 +1,37 @@
 
 (ns respo-message.main
-  (:require [respo.core :refer [render! clear-cache!]]
+  (:require [respo.core :refer [render! clear-cache! falsify-stage! render-element]]
+            [respo.util.format :refer [mute-element]]
             [respo-message.comp.container :refer [comp-container]]
+            [respo-message.updater :refer [add-one remove-one]]
             [cljs.reader :refer [read-string]]))
 
-(def id-ref (atom 0))
+(defonce id-ref (atom 0))
 
 (defn id! [] (swap! id-ref inc) @id-ref)
+
+(def words
+  ["just demo"
+   "Oh, this is strange"
+   "why do I have to do that? it's huge!"
+   "OK"
+   "wrong"
+   "find"])
+
+(def kinds [:attractive :irreversible :attentive :warn :verdant])
 
 (defonce store-ref (atom {:messages []}))
 
 (defn dispatch! [op op-data]
-  (let [id (id!)
+  (println "dispatch!" op op-data)
+  (let [op-id (id!)
         new-store (case op
                     :message/add
-                      (update
+                      (add-one
                        @store-ref
-                       :messages
-                       (fn [messages]
-                         (conj messages {:id id, :kind :attractive, :text op-data})))
+                       op
+                       {:id op-id, :kind (rand-nth kinds), :text (rand-nth words)})
+                    :message/remove (remove-one @store-ref op op-data)
                     @store-ref)]
     (reset! store-ref new-store)))
 
@@ -28,8 +41,19 @@
   (let [target (.querySelector js/document "#app")]
     (render! (comp-container @store-ref) target dispatch! states-ref)))
 
+(def ssr-stages
+  (let [ssr-element (.querySelector js/document "#ssr-stages")
+        ssr-markup (.getAttribute ssr-element "content")]
+    (read-string ssr-markup)))
+
 (defn -main! []
   (enable-console-print!)
+  (if (not (empty? ssr-stages))
+    (let [target (.querySelector js/document "#app")]
+      (falsify-stage!
+       target
+       (mute-element (render-element (comp-container @store-ref ssr-stages) states-ref))
+       dispatch!)))
   (render-app!)
   (add-watch store-ref :changes render-app!)
   (add-watch states-ref :changes render-app!)
