@@ -5,32 +5,25 @@
             [respo-ui.style.colors :as colors]
             [respo.comp.text :refer [comp-text]]))
 
-(def style-zero
-  {:min-width 0,
-   :background-color "white",
-   :width 0,
-   :max-width 0,
-   :opacity 0,
-   :right 160,
-   :pointer-events "none"})
+(def style-zero {:pointer-events :none})
 
 (defn on-remove [idx] (fn [e dispatch!] (dispatch! :message/remove idx)))
 
 (def style-message
   {:line-height "32px",
-   :min-width 80,
-   :text-overflow "ellipsis",
-   :color "white",
-   :text-align "right",
+   :min-width 64,
+   :text-overflow :ellipsis,
+   :color :white,
+   :text-align :left,
    :font-size "14",
    :top 8,
-   :overflow "hidden",
-   :background-color colors/attractive,
-   :cursor "pointer",
+   :overflow :hidden,
+   :background-color :transparent,
+   :cursor :pointer,
    :max-width 320,
    :padding "0 16px",
    :right 8,
-   :position "absolute",
+   :position :absolute,
    :transition-duration "400ms",
    :height 32})
 
@@ -40,7 +33,7 @@
       (div
        {:style (merge
                 style-message
-                {:top (+ 8 (* idx 40)),
+                {:transform (str "translate(0," (* idx 40) "px)"),
                  :background-color (case (:kind message)
                    :attactive colors/attractive
                    :irreversible colors/irreversible
@@ -50,6 +43,10 @@
                    colors/attractive)}),
         :event {:click (on-remove idx)}}
        (comp-text (:text message) nil))
-      (div {:style (merge style-message style-zero {:top (+ 8 (* idx 40))})}))))
+      (div
+       {:style (merge
+                style-message
+                style-zero
+                {:transform (str "translate(-120px," (* idx 40) "px)")})}))))
 
 (def comp-message (create-comp :message render))

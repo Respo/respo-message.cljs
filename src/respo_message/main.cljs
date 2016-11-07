@@ -57,8 +57,13 @@
   (render-app!)
   (add-watch store-ref :changes render-app!)
   (add-watch states-ref :changes render-app!)
+  (js/setTimeout (fn [] (dispatch! :message/add nil)))
   (println "app started!"))
 
-(defn on-jsload! [] (clear-cache!) (render-app!) (println "code update."))
+(defn on-jsload! []
+  (clear-cache!)
+  (render-app!)
+  (println "code update.")
+  (dispatch! :message/add nil))
 
 (set! (.-onload js/window) -main!)

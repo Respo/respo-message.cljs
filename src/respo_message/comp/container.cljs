@@ -7,12 +7,12 @@
             [respo.comp.text :refer [comp-text]]
             [respo-message.comp.msg-list :refer [comp-msg-list]]))
 
-(defn on-add [e dispatch!] (dispatch! :message/add "demo"))
+(defn on-add [e dispatch!] (dispatch! :message/add nil))
 
 (defn render [store]
   (fn [state mutate!]
     (div
-     {:style (merge ui/global)}
+     {:style (merge ui/global {:padding 16})}
      (div {:style ui/button, :event {:click on-add}} (comp-text "add message" nil))
      (comp-msg-list (:messages store)))))
 

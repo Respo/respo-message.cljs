@@ -9,7 +9,7 @@
                   [adzerk/boot-test          "1.1.2"       :scope "test"]
                   [mvc-works/hsl             "0.1.2"]
                   [respo/ui                  "0.1.3"]
-                  [respo                     "0.3.28"]])
+                  [respo                     "0.3.29"]])
 
 (require '[adzerk.boot-cljs   :refer [cljs]]
          '[adzerk.boot-reload :refer [reload]]
@@ -19,7 +19,7 @@
          '[adzerk.boot-test   :refer :all]
          '[clojure.java.io    :as    io])
 
-(def +version+ "0.1.0")
+(def +version+ "0.1.2")
 
 (task-options!
   pom {:project     'respo/message
@@ -66,7 +66,7 @@
 
 (deftask dev! []
   (set-env!
-    :source-paths #{"assets/"})
+    :asset-paths #{"assets/"})
   (comp
     (editor!)
     (html-file :data {:build? false})
@@ -82,7 +82,7 @@
 
 (deftask build-advanced []
   (set-env!
-    :source-paths #{"assets/"})
+    :asset-paths #{"assets/"})
   (comp
     (transform-stack :filename "stack-sepal.ir")
     (cljs :optimizations :advanced

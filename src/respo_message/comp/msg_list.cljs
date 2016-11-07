@@ -7,7 +7,7 @@
   (fn [state mutate!]
     (div
      {}
-     (let [view-messages (conj messages nil)]
+     (let [view-messages (conj messages nil nil nil)]
        (->> view-messages (map-indexed (fn [idx message] [idx (comp-message idx message)])))))))
 
 (def comp-msg-list (create-comp :msg-list render))
