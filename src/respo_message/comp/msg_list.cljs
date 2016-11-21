@@ -3,11 +3,12 @@
   (:require [respo.alias :refer [create-comp div]]
             [respo-message.comp.message :refer [comp-message]]))
 
-(defn render [messages]
+(defn render [messages op-remove]
   (fn [state mutate!]
     (div
      {}
      (let [view-messages (conj messages nil nil nil)]
-       (->> view-messages (map-indexed (fn [idx message] [idx (comp-message idx message)])))))))
+       (->> view-messages
+            (map-indexed (fn [idx message] [idx (comp-message idx message op-remove)])))))))
 
 (def comp-msg-list (create-comp :msg-list render))

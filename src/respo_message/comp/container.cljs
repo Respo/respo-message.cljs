@@ -14,6 +14,6 @@
     (div
      {:style (merge ui/global {:padding 16})}
      (div {:style ui/button, :event {:click on-add}} (comp-text "add message" nil))
-     (comp-msg-list (:messages store)))))
+     (comp-msg-list (:messages store) :notification/remove))))
 
 (def comp-container (create-comp :container render))

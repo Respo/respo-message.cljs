@@ -31,7 +31,7 @@
                        @store-ref
                        op
                        {:id op-id, :kind (rand-nth kinds), :text (rand-nth words)})
-                    :message/remove (remove-one @store-ref op op-data)
+                    :notification/remove (remove-one @store-ref op op-data)
                     @store-ref)]
     (reset! store-ref new-store)))
 

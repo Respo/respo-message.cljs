@@ -7,7 +7,8 @@
 
 (def style-zero {:pointer-events :none})
 
-(defn on-remove [idx] (fn [e dispatch!] (dispatch! :message/remove idx)))
+(defn on-remove [idx op-remove]
+  (fn [e dispatch!] (dispatch! (if (some? op-remove) op-remove :message/remove) idx)))
 
 (def style-message
   {:line-height "32px",
@@ -27,7 +28,7 @@
    :transition-duration "400ms",
    :height 32})
 
-(defn render [idx message]
+(defn render [idx message op-remove]
   (fn [state mutate!]
     (if (some? message)
       (div
@@ -41,7 +42,7 @@
                    :verdant colors/verdant
                    :warm colors/warm
                    colors/attractive)}),
-        :event {:click (on-remove idx)}}
+        :event {:click (on-remove idx op-remove)}}
        (comp-text (:text message) nil))
       (div
        {:style (merge

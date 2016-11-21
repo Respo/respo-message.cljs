@@ -11,7 +11,7 @@ Demo http://repo.respo.site/message/
 [![Clojars Project](https://img.shields.io/clojars/v/respo/message.svg)](https://clojars.org/respo/message)
 
 ```clojure
-[respo/message "0.1.2"]
+[respo/message "0.1.3"]
 ```
 
 You will need these functions:
@@ -39,11 +39,33 @@ For the store part, it's supposed to have the field `:messages` and two actions:
     (reset! store-ref new-store)))
 ```
 
+Probably you want to write by yourself:
+
+```clojure
+(defn remove-one [store op op-data]
+  (update store :messages (fn [messages] (subvec messages 0 op-data))))
+
+(defn add-one [store op op-data]
+  (update store :messages (fn [messages] (conj messages op-data))))
+```
+
 Mounting the component into tree is simpler:
 
 ```clojure
-(comp-msg-list (:messages store)))))
+(def op-remove :x/remove)
+
+(comp-msg-list (:messages store) op-remove)
 ```
+
+By default the "removing" action use `:message/remove`. You can set it with `op-remove`.
+
+Message types are corresponded to those in Respo UI:
+
+* attractive
+* irreversible
+* attentive
+* verdant
+* warm
 
 ### Develop
 
