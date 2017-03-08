@@ -17,7 +17,7 @@
 (require '[adzerk.boot-cljs   :refer [cljs]]
          '[adzerk.boot-reload :refer [reload]])
 
-(def +version+ "0.1.3")
+(def +version+ "0.1.4")
 
 (task-options!
   pom {:project     'respo/message
