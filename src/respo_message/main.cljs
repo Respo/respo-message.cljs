@@ -30,7 +30,7 @@
                       (add-one
                        @store-ref
                        op
-                       {:id op-id, :kind (rand-nth kinds), :text (rand-nth words)})
+                       {:id op-id, :text (rand-nth words), :kind (rand-nth kinds)})
                     :notification/remove (remove-one @store-ref op op-data)
                     @store-ref)]
     (reset! store-ref new-store)))
