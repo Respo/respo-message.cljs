@@ -1,9 +1,9 @@
 
 (ns respo-message.comp.message
-  (:require [respo.alias :refer [create-comp div]]
+  (:require-macros [respo.macros :refer [defcomp div <> span]])
+  (:require [respo.core :refer [create-comp]]
             [respo-ui.style :as ui]
-            [respo-ui.style.colors :as colors]
-            [respo.comp.text :refer [comp-text]]))
+            [respo-ui.style.colors :as colors]))
 
 (defn on-remove [idx op-remove]
   (fn [e dispatch!] (dispatch! (if (some? op-remove) op-remove :message/remove) idx)))
@@ -28,26 +28,25 @@
 
 (def style-zero {:pointer-events :none})
 
-(defn render [idx message op-remove]
-  (fn [state mutate!]
-    (if (some? message)
-      (div
-       {:style (merge
-                style-message
-                {:transform (str "translate(0," (* idx 40) "px)"),
-                 :background-color (case (:kind message)
-                   :attactive colors/attractive
-                   :irreversible colors/irreversible
-                   :attentive colors/attentive
-                   :verdant colors/verdant
-                   :warm colors/warm
-                   colors/attractive)}),
-        :event {:click (on-remove idx op-remove)}}
-       (comp-text (:text message) nil))
-      (div
-       {:style (merge
-                style-message
-                style-zero
-                {:transform (str "translate(-120px," (* idx 40) "px)")})}))))
-
-(def comp-message (create-comp :message render))
+(defcomp
+ comp-message
+ (idx message op-remove)
+ (if (some? message)
+   (div
+    {:style (merge
+             style-message
+             {:transform (str "translate(0," (* idx 40) "px)"),
+              :background-color (case (:kind message)
+                :attactive colors/attractive
+                :irreversible colors/irreversible
+                :attentive colors/attentive
+                :verdant colors/verdant
+                :warm colors/warm
+                colors/attractive)}),
+     :event {:click (on-remove idx op-remove)}}
+    (<> span (:text message) nil))
+   (div
+    {:style (merge
+             style-message
+             style-zero
+             {:transform (str "translate(-120px," (* idx 40) "px)")})})))

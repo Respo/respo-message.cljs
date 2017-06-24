@@ -1,14 +1,20 @@
 
 (ns respo-message.main
-  (:require [respo.core :refer [render! clear-cache! falsify-stage! render-element]]
+  (:require [respo.core :refer [render! clear-cache! realize-ssr!]]
+            [respo.cursor :refer [mutate]]
             [respo.util.format :refer [mute-element]]
             [respo-message.comp.container :refer [comp-container]]
             [respo-message.updater :refer [add-one remove-one]]
-            [cljs.reader :refer [read-string]]))
+            [cljs.reader :refer [read-string]]
+            [respo-message.schema :as schema]))
 
-(defonce id-ref (atom 0))
+(def ssr? (some? (.querySelector js/document "meta.respo-app")))
 
-(defn id! [] (swap! id-ref inc) @id-ref)
+(defonce *id (atom 0))
+
+(defn id! [] (swap! *id inc) @*id)
+
+(defonce *store (atom schema/store))
 
 (def words
   ["just demo"
@@ -20,50 +26,38 @@
 
 (def kinds [:attractive :irreversible :attentive :warn :verdant])
 
-(defonce store-ref (atom {:messages []}))
-
 (defn dispatch! [op op-data]
   (println "dispatch!" op op-data)
   (let [op-id (id!)
         new-store (case op
+                    :states (update @*store :states (mutate op-data))
                     :message/add
                       (add-one
-                       @store-ref
+                       @*store
                        op
                        {:id op-id, :text (rand-nth words), :kind (rand-nth kinds)})
-                    :notification/remove (remove-one @store-ref op op-data)
-                    @store-ref)]
-    (reset! store-ref new-store)))
+                    :notification/remove (remove-one @*store op op-data)
+                    @*store)]
+    (reset! *store new-store)))
 
-(defonce states-ref (atom {}))
+(def mount-target (.querySelector js/document ".app"))
 
-(defn render-app! []
-  (let [target (.querySelector js/document "#app")]
-    (render! (comp-container @store-ref) target dispatch! states-ref)))
+(defn render-app! [renderer] (renderer mount-target (comp-container @*store) dispatch!))
 
-(def ssr-stages
-  (let [ssr-element (.querySelector js/document "#ssr-stages")
-        ssr-markup (.getAttribute ssr-element "content")]
-    (read-string ssr-markup)))
-
-(defn -main! []
+(defn main! []
   (enable-console-print!)
-  (if (not (empty? ssr-stages))
-    (let [target (.querySelector js/document "#app")]
-      (falsify-stage!
-       target
-       (mute-element (render-element (comp-container @store-ref ssr-stages) states-ref))
-       dispatch!)))
-  (render-app!)
-  (add-watch store-ref :changes render-app!)
-  (add-watch states-ref :changes render-app!)
+  (if ssr? (render-app! realize-ssr!))
+  (render-app! render!)
+  (add-watch *store :changes (fn [] (render-app! render!)))
   (js/setTimeout (fn [] (dispatch! :message/add nil)))
   (println "app started!"))
 
-(defn on-jsload! []
+(defonce *states (atom {}))
+
+(defn reload! []
   (clear-cache!)
-  (render-app!)
-  (println "code update.")
+  (render-app! render!)
+  (println "Code update.")
   (dispatch! :message/add nil))
 
-(set! (.-onload js/window) -main!)
+(set! (.-onload js/window) main!)
