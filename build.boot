@@ -1,16 +1,18 @@
 
+
+(defn read-password [guide]
+  (String/valueOf (.readPassword (System/console) guide nil)))
+
 (set-env!
   :resource-paths #{"src"}
-  :dependencies '[[respo                     "0.5.7"       :scope "provided"]
-                  [respo/ui                  "0.1.9"       :scope "provided"]
-                  [mvc-works/hsl             "0.1.2"]])
+  :dependencies '[]
+  :repositories #(conj % ["clojars" {:url "https://clojars.org/repo/"
+                                     :username "jiyinyiyong"
+                                     :password (read-password "Clojars password: ")}]))
 
-(def +version+ "0.2.0")
+(def +version+ "0.2.1")
 
-(task-options!
-  pom {})
-
-(deftask build []
+(deftask deploy []
   (comp
     (pom :project     'respo/message
          :version     +version+
@@ -19,12 +21,4 @@
          :scm         {:url "https://github.com/Respo/respo-message"}
          :license     {"MIT" "http://opensource.org/licenses/mit-license.php"})
     (jar)
-    (install)
-    (target)))
-
-(deftask deploy []
-  (set-env!
-    :repositories #(conj % ["clojars" {:url "https://clojars.org/repo/"}]))
-  (comp
-    (build)
-    (push :repo "clojars" :gpg-sign (not (.endsWith +version+ "-SNAPSHOT")))))
+    (push :repo "clojars" :gpg-sign false)))
