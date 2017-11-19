@@ -3,7 +3,8 @@
   (:require [respo.render.html :refer [make-string]]
             [shell-page.core :refer [make-page spit slurp]]
             [respo-message.comp.container :refer [comp-container]]
-            [respo-message.schema :as schema]))
+            [respo-message.schema :as schema]
+            [cljs.reader :refer [read-string]]))
 
 (def base-info
   {:title "Message",
@@ -21,7 +22,7 @@
 
 (defn prod-page []
   (let [html-content (make-string (comp-container schema/store))
-        cljs-info (.parse js/JSON (slurp "dist/cljs-manifest.json"))
+        assets (read-string (slurp "dist/assets.edn"))
         cdn (if preview? "" "http://cdn.tiye.me/respo-message/")
         prefix-cdn (fn [x] (str cdn x))]
     (make-page
@@ -29,10 +30,7 @@
      (merge
       base-info
       {:styles ["http://cdn.tiye.me/favored-fonts/main.css"],
-       :scripts (map
-                 prefix-cdn
-                 [(-> cljs-info (aget 0) (aget "js-name"))
-                  (-> cljs-info (aget 1) (aget "js-name"))]),
+       :scripts (map #(-> % :output-name prefix-cdn) assets),
        :ssr "respo-ssr"}))))
 
 (defn main! []
