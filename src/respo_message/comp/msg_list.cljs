@@ -8,7 +8,6 @@
  comp-msg-list
  (messages op-remove)
  (list->
-  :div
   {}
   (let [view-messages (conj messages nil nil nil)]
     (->> view-messages

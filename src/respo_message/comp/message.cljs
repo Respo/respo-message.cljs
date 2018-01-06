@@ -43,7 +43,7 @@
                 :verdant colors/verdant
                 :warm colors/warm
                 colors/attractive)}),
-     :event {:click (on-remove idx op-remove)}}
+     :on-click (on-remove idx op-remove)}
     (<> span (:text message) nil))
    (div
     {:style (merge

@@ -14,5 +14,5 @@
  (store)
  (div
   {:style (merge ui/global {:padding 16})}
-  (div {:style ui/button, :event {:click on-add}} (<> span "add message" nil))
+  (div {:style ui/button, :on-click on-add} (<> span "add message" nil))
   (comp-msg-list (:messages store) :notification/remove)))
