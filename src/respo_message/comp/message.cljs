@@ -2,8 +2,8 @@
 (ns respo-message.comp.message
   (:require-macros [respo.macros :refer [defcomp div <> span]])
   (:require [respo.core :refer [create-comp]]
-            [respo-ui.style :as ui]
-            [respo-ui.style.colors :as colors]))
+            [respo-ui.core :as ui]
+            [respo-ui.colors :as colors]))
 
 (defn on-remove [idx op-remove]
   (fn [e dispatch!] (dispatch! (if (some? op-remove) op-remove :message/remove) idx)))

@@ -11,7 +11,7 @@ Demo http://repo.respo.site/message/
 [![Clojars Project](https://img.shields.io/clojars/v/respo/message.svg)](https://clojars.org/respo/message)
 
 ```clojure
-[respo/message "0.2.2"]
+[respo/message "0.2.3"]
 ```
 
 You will need these functions:
