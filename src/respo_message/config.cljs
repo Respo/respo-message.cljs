@@ -16,4 +16,4 @@
    :cdn-folder "tiye.me:cdn/respo-message/",
    :title "Message",
    :icon "http://cdn.tiye.me/logo/respo.png",
-   :upload-folder "tiye.me:repo/mvc-works/respo-message/"})
+   :upload-folder "tiye.me:repo/Respo/message/"})
