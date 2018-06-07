@@ -8,13 +8,15 @@
             [cljs.reader :refer [read-string]]
             [respo-message.schema :as schema]))
 
-(def ssr? (some? (.querySelector js/document "meta.respo-app")))
-
 (defonce *id (atom 0))
+
+(defonce *states (atom {}))
+
+(defonce *store (atom schema/store))
 
 (defn id! [] (swap! *id inc) @*id)
 
-(defonce *store (atom schema/store))
+(def kinds [:attractive :irreversible :attentive :warn :verdant])
 
 (def words
   ["just demo"
@@ -23,8 +25,6 @@
    "OK"
    "wrong"
    "find"])
-
-(def kinds [:attractive :irreversible :attentive :warn :verdant])
 
 (defn dispatch! [op op-data]
   (println "dispatch!" op op-data)
@@ -36,7 +36,8 @@
                        @*store
                        op
                        {:id op-id, :text (rand-nth words), :kind (rand-nth kinds)})
-                    :notification/remove (remove-one @*store op op-data)
+                    :message/remove (remove-one @*store op op-data)
+                    :message/clear (assoc @*store :messages [])
                     @*store)]
     (reset! *store new-store)))
 
@@ -44,15 +45,14 @@
 
 (defn render-app! [renderer] (renderer mount-target (comp-container @*store) dispatch!))
 
+(def ssr? (some? (.querySelector js/document "meta.respo-app")))
+
 (defn main! []
-  (enable-console-print!)
   (if ssr? (render-app! realize-ssr!))
   (render-app! render!)
   (add-watch *store :changes (fn [] (render-app! render!)))
   (js/setTimeout (fn [] (dispatch! :message/add nil)))
   (println "app started!"))
-
-(defonce *states (atom {}))
 
 (defn reload! []
   (clear-cache!)
