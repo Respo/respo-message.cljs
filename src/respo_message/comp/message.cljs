@@ -1,12 +1,9 @@
 
 (ns respo-message.comp.message
-  (:require-macros [respo.macros :refer [defcomp div <> span]])
   (:require [respo.core :refer [create-comp]]
+            [respo.macros :refer [defcomp div <> span]]
             [respo-ui.core :as ui]
-            [respo-ui.colors :as colors]))
-
-(defn on-remove [idx op-remove]
-  (fn [e dispatch!] (dispatch! (if (some? op-remove) op-remove :message/remove) idx)))
+            [hsl.core :refer [hsl]]))
 
 (def style-message
   {:position :absolute,
@@ -15,8 +12,10 @@
    :height 32,
    :line-height "32px",
    :font-size "14",
-   :background-color :transparent,
-   :color :white,
+   :background-color (hsl 0 0 100),
+   :border (str "1px solid " (hsl 200 50 80)),
+   :border-radius "8px",
+   :color (hsl 0 0 60),
    :padding "0 16px",
    :min-width 64,
    :text-align :left,
@@ -35,15 +34,10 @@
    (div
     {:style (merge
              style-message
-             {:transform (str "translate(0," (* idx 40) "px)"),
-              :background-color (case (:kind message)
-                :attactive colors/attractive
-                :irreversible colors/irreversible
-                :attentive colors/attentive
-                :verdant colors/verdant
-                :warm colors/warm
-                colors/attractive)}),
-     :on-click (on-remove idx op-remove)}
+             (:style message)
+             {:transform (str "translate(0," (* idx 40) "px)")}),
+     :on-click (fn [e d! m!]
+       (d! (if (some? op-remove) op-remove :message/remove) (assoc message :index idx)))}
     (<> span (:text message) nil))
    (div
     {:style (merge

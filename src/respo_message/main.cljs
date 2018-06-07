@@ -4,7 +4,6 @@
             [respo.cursor :refer [mutate]]
             [respo.util.format :refer [mute-element]]
             [respo-message.comp.container :refer [comp-container]]
-            [respo-message.updater :refer [add-one remove-one]]
             [cljs.reader :refer [read-string]]
             [respo-message.schema :as schema]))
 
@@ -16,29 +15,22 @@
 
 (defn id! [] (swap! *id inc) @*id)
 
-(def kinds [:attractive :irreversible :attentive :warn :verdant])
-
-(def words
-  ["just demo"
-   "Oh, this is strange"
-   "why do I have to do that? it's huge!"
-   "OK"
-   "wrong"
-   "find"])
-
 (defn dispatch! [op op-data]
   (println "dispatch!" op op-data)
   (let [op-id (id!)
+        op-time (.now js/Date)
+        store @*store
         new-store (case op
-                    :states (update @*store :states (mutate op-data))
+                    :states (update store :states (mutate op-data))
                     :message/add
-                      (add-one
-                       @*store
-                       op
-                       {:id op-id, :text (rand-nth words), :kind (rand-nth kinds)})
-                    :message/remove (remove-one @*store op op-data)
-                    :message/clear (assoc @*store :messages [])
-                    @*store)]
+                      (assoc-in
+                       store
+                       [:messages op-id]
+                       (assoc op-data :id op-id :time op-time))
+                    :message/remove
+                      (update store :messages (fn [messages] (dissoc messages (:id op-data))))
+                    :message/clear (assoc store :messages {})
+                    store)]
     (reset! *store new-store)))
 
 (def mount-target (.querySelector js/document ".app"))
@@ -58,6 +50,6 @@
   (clear-cache!)
   (render-app! render!)
   (println "Code update.")
-  (dispatch! :message/add nil))
+  (dispatch! :message/add {:text "reload"}))
 
 (set! (.-onload js/window) main!)

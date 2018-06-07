@@ -1,13 +1,12 @@
 
 (ns respo-message.comp.container
-  (:require-macros [respo.macros :refer [defcomp div span button <>]])
   (:require [hsl.core :refer [hsl]]
+            [respo.macros :refer [defcomp div span button <>]]
             [respo-ui.core :as ui]
             [respo.core :refer [create-comp]]
             [respo.comp.space :refer [=<]]
-            [respo-message.comp.msg-list :refer [comp-msg-list]]))
-
-(defn on-add [e dispatch!] (dispatch! :message/add nil))
+            [respo-message.comp.messages :refer [comp-messages]]
+            [respo-message.schema :as schema]))
 
 (defcomp
  comp-container
@@ -16,9 +15,12 @@
   {:style (merge ui/global {:padding 16})}
   (div
    {:style ui/row}
-   (button {:style ui/button, :on-click on-add} (<> "Try"))
+   (button
+    {:style ui/button,
+     :on-click (fn [e d! m!] (d! :message/add (merge schema/message {:text "message"})))}
+    (<> "Try"))
    (=< 16 nil)
    (button
     {:style ui/button, :on-click (fn [e d! m!] (d! :message/clear nil))}
     (<> "Clear")))
-  (comp-msg-list (:messages store) :message/remove)))
+  (comp-messages (:messages store) :message/remove)))
