@@ -36,7 +36,8 @@
                        @*store
                        op
                        {:id op-id, :text (rand-nth words), :kind (rand-nth kinds)})
-                    :notification/remove (remove-one @*store op op-data)
+                    :message/remove (remove-one @*store op op-data)
+                    :message/clear (assoc @*store :messages [])
                     @*store)]
     (reset! *store new-store)))
 
