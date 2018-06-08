@@ -6,7 +6,8 @@
             [respo.core :refer [create-comp]]
             [respo.comp.space :refer [=<]]
             [respo-message.comp.messages :refer [comp-messages]]
-            [respo-message.schema :as schema]))
+            [respo-message.schema :as schema]
+            ["lorem-ipsum" :as lorem-ipsum]))
 
 (defcomp
  comp-container
@@ -17,7 +18,7 @@
    {:style ui/row}
    (button
     {:style ui/button,
-     :on-click (fn [e d! m!] (d! :message/add (merge schema/message {:text "message"})))}
+     :on-click (fn [e d! m!] (d! :message/add (merge schema/message {:text (lorem-ipsum)})))}
     (<> "Try"))
    (=< 16 nil)
    (button

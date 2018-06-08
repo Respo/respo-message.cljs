@@ -8,8 +8,8 @@
  comp-messages
  (messages op-remove)
  (list->
-  {}
+  {:style {:overflow :hidden}}
   (->> messages
        vals
-       (sort-by (fn [message] (:time message)))
+       (sort-by (fn [message] (unchecked-negate (:time message))))
        (map-indexed (fn [idx message] [(:id message) (comp-message idx message op-remove)])))))

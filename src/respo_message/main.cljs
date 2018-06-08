@@ -5,7 +5,8 @@
             [respo.util.format :refer [mute-element]]
             [respo-message.comp.container :refer [comp-container]]
             [cljs.reader :refer [read-string]]
-            [respo-message.schema :as schema]))
+            [respo-message.schema :as schema]
+            ["lorem-ipsum" :as lorem-ipsum]))
 
 (defonce *id (atom 0))
 
@@ -43,13 +44,13 @@
   (if ssr? (render-app! realize-ssr!))
   (render-app! render!)
   (add-watch *store :changes (fn [] (render-app! render!)))
-  (js/setTimeout (fn [] (dispatch! :message/add nil)))
+  (js/setTimeout (fn [] (dispatch! :message/add {:text (lorem-ipsum)})))
   (println "app started!"))
 
 (defn reload! []
   (clear-cache!)
   (render-app! render!)
   (println "Code update.")
-  (dispatch! :message/add {:text "reload"}))
+  (dispatch! :message/add {:text (lorem-ipsum)}))
 
 (set! (.-onload js/window) main!)
