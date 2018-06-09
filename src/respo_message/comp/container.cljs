@@ -7,7 +7,10 @@
             [respo.comp.space :refer [=<]]
             [respo-message.comp.messages :refer [comp-messages]]
             [respo-message.schema :as schema]
-            ["lorem-ipsum" :as lorem-ipsum]))
+            ["lorem-ipsum" :as lorem-ipsum]
+            [respo-message.action :as action]
+            [respo.comp.inspect :refer [comp-inspect]]
+            [respo-message.config :as config]))
 
 (defcomp
  comp-container
@@ -18,10 +21,12 @@
    {:style ui/row}
    (button
     {:style ui/button,
-     :on-click (fn [e d! m!] (d! :message/add (merge schema/message {:text (lorem-ipsum)})))}
+     :on-click (fn [e d! m!]
+       (d!
+        action/create
+        (merge schema/message {:text (lorem-ipsum), :duration (rand-int 10)})))}
     (<> "Try"))
    (=< 16 nil)
-   (button
-    {:style ui/button, :on-click (fn [e d! m!] (d! :message/clear nil))}
-    (<> "Clear")))
-  (comp-messages (:messages store) :message/remove)))
+   (button {:style ui/button, :on-click (fn [e d! m!] (d! action/clear nil))} (<> "Clear")))
+  (comp-messages (:messages store) {:bottom? true})
+  (when config/dev? (comp-inspect "messages" (:messages store) nil))))
