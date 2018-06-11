@@ -4,9 +4,13 @@
             [respo.cursor :refer [mutate]]
             [respo.util.format :refer [mute-element]]
             [respo-message.comp.container :refer [comp-container]]
-            [respo-message.updater :refer [add-one remove-one]]
             [cljs.reader :refer [read-string]]
-            [respo-message.schema :as schema]))
+            [respo-message.schema :as schema]
+            ["lorem-ipsum" :as lorem-ipsum]
+            ["shortid" :as shortid]
+            [respo-message.updater :refer [update-messages]]
+            [respo-message.util :refer [auto-close-message!]]
+            [respo-message.action :as action]))
 
 (defonce *id (atom 0))
 
@@ -14,36 +18,24 @@
 
 (defonce *store (atom schema/store))
 
-(defn id! [] (swap! *id inc) @*id)
-
-(def kinds [:attractive :irreversible :attentive :warn :verdant])
-
-(def words
-  ["just demo"
-   "Oh, this is strange"
-   "why do I have to do that? it's huge!"
-   "OK"
-   "wrong"
-   "find"])
-
 (defn dispatch! [op op-data]
   (println "dispatch!" op op-data)
-  (let [op-id (id!)
-        new-store (case op
-                    :states (update @*store :states (mutate op-data))
-                    :message/add
-                      (add-one
-                       @*store
-                       op
-                       {:id op-id, :text (rand-nth words), :kind (rand-nth kinds)})
-                    :message/remove (remove-one @*store op op-data)
-                    :message/clear (assoc @*store :messages [])
-                    @*store)]
-    (reset! *store new-store)))
+  (let [op-id (.generate shortid), op-time (.now js/Date), store @*store]
+    (auto-close-message! dispatch! op op-data op-id op-data)
+    (reset!
+     *store
+     (cond
+       (= op :states) (update store :states (mutate op-data))
+       (action/message-action? op)
+         (update store :messages #(update-messages % op op-data op-id op-time))
+       :else (do (println "Unhandled operation:" op) store)))))
+
+(defn id! [] (swap! *id inc) @*id)
 
 (def mount-target (.querySelector js/document ".app"))
 
-(defn render-app! [renderer] (renderer mount-target (comp-container @*store) dispatch!))
+(defn render-app! [renderer]
+  (renderer mount-target (comp-container @*store) #(dispatch! %1 %2)))
 
 (def ssr? (some? (.querySelector js/document "meta.respo-app")))
 
@@ -51,13 +43,13 @@
   (if ssr? (render-app! realize-ssr!))
   (render-app! render!)
   (add-watch *store :changes (fn [] (render-app! render!)))
-  (js/setTimeout (fn [] (dispatch! :message/add nil)))
+  (js/setTimeout (fn [] (dispatch! action/create {:text (lorem-ipsum)})))
   (println "app started!"))
 
 (defn reload! []
   (clear-cache!)
   (render-app! render!)
   (println "Code update.")
-  (dispatch! :message/add nil))
+  (dispatch! action/create {:text (lorem-ipsum)}))
 
 (set! (.-onload js/window) main!)

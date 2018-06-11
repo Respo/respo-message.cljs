@@ -1,7 +1,7 @@
 
 (def config {:clojars-user "jiyinyiyong"
              :package 'respo/message
-             :version "0.2.3"
+             :version "0.3.0"
              :github-url "https://github.com/Respo/respo-message"
              :description "Message component on the right top"})
 
