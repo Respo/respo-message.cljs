@@ -11,7 +11,7 @@ Demo http://repo.respo.site/message/
 [![Clojars Project](https://img.shields.io/clojars/v/respo/message.svg)](https://clojars.org/respo/message)
 
 ```clojure
-[respo/message "0.3.0"]
+[respo/message "0.3.1"]
 ```
 
 You will need:
@@ -32,8 +32,12 @@ To mount component and show a message, by default it shows for 4 seconds:
 ```
 
 ```clojure
-(dispatch! action/create {:text (lorem-ipsum), :duration 4}))
+(dispatch! action/create {:text (lorem-ipsum), :token "xxx"}))
+
+(dispatch! action/remove-one {:token "xxx"})
 ```
+
+Messages can be removed with `:id` or `:token`, where `:token` is what you can generate.
 
 Sorry but the component gets even harder to setup:
 
@@ -41,7 +45,6 @@ Sorry but the component gets even harder to setup:
 (defn dispatch! [op op-data]
   (println "dispatch!" op op-data)
   (let [op-id (.generate shortid), op-time (.now js/Date), store @*store]
-    (auto-close-message! dispatch! op op-data op-id op-data)
     (reset!
      *store
      (cond
@@ -53,7 +56,7 @@ Sorry but the component gets even harder to setup:
 
 ### Develop
 
-Workflow https://github.com/mvc-works/stack-workflow
+Workflow https://github.com/mvc-works/calcit-workflow
 
 ### License
 

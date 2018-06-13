@@ -7,5 +7,10 @@
     (= op action/clear) {}
     (= op action/create)
       (assoc messages op-id (merge schema/message op-data {:id op-id, :time op-time}))
-    (= op action/remove-one) (dissoc messages (:id op-data))
+    (= op action/remove-one)
+      (if (some? (:token op-data))
+        (->> messages
+             (filter (fn [[k message]] (not= (:token op-data) (:token message))))
+             (into {}))
+        (dissoc messages (:id op-data)))
     :else messages))

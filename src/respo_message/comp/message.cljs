@@ -39,5 +39,7 @@
              {:bottom 8, :transform (str "translate(0," (- (* idx 40)) "px)")}
              {:top 8, :transform (str "translate(0," (* idx 40) "px)")})),
    :on-click (fn [e d! m!]
-     (d! action/remove-one {:id (:id message), :index idx, :time (:time message)}))}
+     (d!
+      action/remove-one
+      {:id (:id message), :token (:token message), :index idx, :time (:time message)}))}
   (<> span (:text message) nil)))

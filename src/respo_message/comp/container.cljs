@@ -10,7 +10,8 @@
             ["lorem-ipsum" :as lorem-ipsum]
             [respo-message.action :as action]
             [respo.comp.inspect :refer [comp-inspect]]
-            [respo-message.config :as config]))
+            [respo-message.config :as config]
+            ["shortid" :as shortid]))
 
 (defcomp
  comp-container
@@ -22,9 +23,9 @@
    (button
     {:style ui/button,
      :on-click (fn [e d! m!]
-       (d!
-        action/create
-        (merge schema/message {:text (lorem-ipsum), :duration (rand-int 10)})))}
+       (let [new-token (.generate shortid)]
+         (d! action/create (merge schema/message {:token new-token, :text (lorem-ipsum)}))
+         (js/setTimeout (fn [] (d! action/remove-one {:token new-token})) 2000)))}
     (<> "Try"))
    (=< 16 nil)
    (button {:style ui/button, :on-click (fn [e d! m!] (d! action/clear nil))} (<> "Clear")))
