@@ -9,7 +9,6 @@
             ["lorem-ipsum" :as lorem-ipsum]
             ["shortid" :as shortid]
             [respo-message.updater :refer [update-messages]]
-            [respo-message.util :refer [auto-close-message!]]
             [respo-message.action :as action]))
 
 (defonce *id (atom 0))
@@ -21,7 +20,6 @@
 (defn dispatch! [op op-data]
   (println "dispatch!" op op-data)
   (let [op-id (.generate shortid), op-time (.now js/Date), store @*store]
-    (auto-close-message! dispatch! op op-data op-id op-data)
     (reset!
      *store
      (cond
