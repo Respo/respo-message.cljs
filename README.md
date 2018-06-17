@@ -11,7 +11,7 @@ Demo http://repo.respo.site/message/
 [![Clojars Project](https://img.shields.io/clojars/v/respo/message.svg)](https://clojars.org/respo/message)
 
 ```clojure
-[respo/message "0.3.2"]
+[respo/message "0.3.3"]
 ```
 
 You will need:
@@ -29,7 +29,8 @@ respo-message.comp.messages/comp-messages
 To mount component and show a message, by default it shows for 4 seconds:
 
 ```clojure
-(comp-messages (:messages store) {:bottom? true} action/dict)
+(comp-messages (:messages store) {:bottom? true}
+               (fn [info d! m!] (d! action/remove-one info)))
 ```
 
 ```clojure
@@ -52,7 +53,7 @@ Sorry but the component gets even harder to setup:
               (action/message-action? op)
                 (update store
                         :messages
-                        #(update-messages % action/dict op op-data op-id op-time))
+                        #(update-messages % op op-data op-id op-time))
               :else (do (println "Unhandled operation:" op) store)))))
 ```
 
