@@ -25,7 +25,7 @@
      (cond
        (= op :states) (update store :states (mutate op-data))
        (action/message-action? op)
-         (update store :messages #(update-messages % op op-data op-id op-time))
+         (update store :messages #(update-messages % action/dict op op-data op-id op-time))
        :else (do (println "Unhandled operation:" op) store)))))
 
 (defn id! [] (swap! *id inc) @*id)

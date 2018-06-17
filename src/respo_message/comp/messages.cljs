@@ -6,10 +6,11 @@
 
 (defcomp
  comp-messages
- (messages options)
+ (messages options on-remove!)
  (list->
   {:style {:overflow :hidden}}
   (->> messages
        vals
        (sort-by (fn [message] (unchecked-negate (:time message))))
-       (map-indexed (fn [idx message] [(:id message) (comp-message idx message options)])))))
+       (map-indexed
+        (fn [idx message] [(:id message) (comp-message idx message options on-remove!)])))))
