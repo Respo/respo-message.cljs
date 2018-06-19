@@ -29,5 +29,8 @@
     (<> "Try"))
    (=< 16 nil)
    (button {:style ui/button, :on-click (fn [e d! m!] (d! action/clear nil))} (<> "Clear")))
-  (comp-messages (:messages store) {:bottom? true})
+  (comp-messages
+   (:messages store)
+   {:bottom? true}
+   (fn [info d! m!] (d! action/remove-one info)))
   (when config/dev? (comp-inspect "messages" (:messages store) nil))))

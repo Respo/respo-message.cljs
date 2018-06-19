@@ -4,8 +4,7 @@
             [respo.macros :refer [defcomp div <> span]]
             [respo-ui.core :as ui]
             [hsl.core :refer [hsl]]
-            [respo-message.schema :as schema]
-            [respo-message.action :as action]))
+            [respo-message.schema :as schema]))
 
 (def style-message
   {:position :absolute,
@@ -30,7 +29,7 @@
 
 (defcomp
  comp-message
- (idx message options)
+ (idx message options on-remove!)
  (div
   {:style (merge
            style-message
@@ -39,7 +38,8 @@
              {:bottom 8, :transform (str "translate(0," (- (* idx 40)) "px)")}
              {:top 8, :transform (str "translate(0," (* idx 40) "px)")})),
    :on-click (fn [e d! m!]
-     (d!
-      action/remove-one
-      {:id (:id message), :token (:token message), :index idx, :time (:time message)}))}
+     (on-remove!
+      {:id (:id message), :token (:token message), :index idx, :time (:time message)}
+      d!
+      m!))}
   (<> span (:text message) nil)))
