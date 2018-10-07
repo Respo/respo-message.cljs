@@ -4,7 +4,7 @@ Respo Message
 
 > Message component for Respo apps.
 
-Demo http://repo.respo.site/message/
+Demo http://repo.respo-mvc.org/message/
 
 ### Usage
 
