@@ -1,7 +1,7 @@
 
 (ns respo-message.comp.message
   (:require [respo.core :refer [create-comp]]
-            [respo.macros :refer [defcomp div <> span]]
+            [respo.core :refer [defcomp div <> span]]
             [respo-ui.core :as ui]
             [hsl.core :refer [hsl]]
             [respo-message.schema :as schema]))

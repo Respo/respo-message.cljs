@@ -1,7 +1,7 @@
 
 (ns respo-message.comp.container
   (:require [hsl.core :refer [hsl]]
-            [respo.macros :refer [defcomp div span button <>]]
+            [respo.core :refer [defcomp div span button <>]]
             [respo-ui.core :as ui]
             [respo.core :refer [create-comp]]
             [respo.comp.space :refer [=<]]
