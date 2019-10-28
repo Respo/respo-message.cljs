@@ -3,7 +3,6 @@
   (:require [hsl.core :refer [hsl]]
             [respo.core :refer [defcomp div span button <>]]
             [respo-ui.core :as ui]
-            [respo.core :refer [create-comp]]
             [respo.comp.space :refer [=<]]
             [respo-message.comp.messages :refer [comp-messages]]
             [respo-message.schema :as schema]
