@@ -1,19 +1,23 @@
 
-(ns respo-message.config (:require [respo-message.util :refer [get-env!]]))
+(ns respo-message.config )
 
-(def bundle-builds #{"release" "local-bundle"})
+(def cdn?
+  (cond
+    (exists? js/window) false
+    (exists? js/process) (= "true" js/process.env.cdn)
+    :else false))
 
 (def dev?
-  (if (exists? js/window)
-    (do ^boolean js/goog.DEBUG)
-    (not (contains? bundle-builds (get-env! "mode")))))
+  (let [debug? (do ^boolean js/goog.DEBUG)]
+    (cond
+      (exists? js/window) debug?
+      (exists? js/process) (not= "true" js/process.env.release)
+      :else true)))
 
 (def site
-  {:storage "respo-message",
-   :dev-ui "http://localhost:8100/main.css",
-   :release-ui "http://cdn.tiye.me/favored-fonts/main.css",
+  {:dev-ui "http://localhost:8100/main-fonts.css",
+   :release-ui "http://cdn.tiye.me/favored-fonts/main-fonts.css",
    :cdn-url "http://cdn.tiye.me/respo-message/",
-   :cdn-folder "tiye.me:cdn/respo-message/",
    :title "Message",
    :icon "http://cdn.tiye.me/logo/respo.png",
-   :upload-folder "tiye.me:repo/Respo/message/"})
+   :storage-key "respo-message"})

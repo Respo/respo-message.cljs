@@ -6,30 +6,25 @@
             [respo-message.schema :as schema]
             [cljs.reader :refer [read-string]]
             [respo-message.config :as config]
-            [respo-message.util :refer [get-env!]]))
+            [cumulo-util.build :refer [get-ip!]])
+  (:require-macros [clojure.core.strint :refer [<<]]))
 
 (def base-info
-  {:title "Message",
-   :icon "http://logo.mvc-works.org/mvc.png",
-   :ssr nil,
-   :inner-html nil,
-   :inline-style [(slurp "entry/main.css")]})
+  {:title (:title config/site), :icon (:icon config/site), :ssr nil, :inline-html nil})
 
 (defn dev-page []
   (make-page
    ""
    (merge
     base-info
-    {:styles ["/entry/main.css" (:dev-ui config/site)],
+    {:styles [(<< "http://~(get-ip!):8100/main.css") "/entry/main.css"],
      :scripts ["/client.js"],
      :inline-styles []})))
-
-(def local-bundle? (= "local-bundle" (get-env! "mode")))
 
 (defn prod-page []
   (let [html-content (make-string (comp-container schema/store))
         assets (read-string (slurp "dist/assets.edn"))
-        cdn (if local-bundle? "" (:cdn-url config/site))
+        cdn (if config/cdn? (:cdn-url config/site) "")
         prefix-cdn (fn [x] (str cdn x))]
     (make-page
      html-content
@@ -41,6 +36,7 @@
        :inline-styles [(slurp "./entry/main.css")]}))))
 
 (defn main! []
-  (if (contains? config/bundle-builds (get-env! "mode"))
-    (spit "dist/index.html" (prod-page))
-    (spit "target/index.html" (dev-page))))
+  (println "Running mode:" (if config/dev? "dev" "release"))
+  (if config/dev?
+    (spit "target/index.html" (dev-page))
+    (spit "dist/index.html" (prod-page))))

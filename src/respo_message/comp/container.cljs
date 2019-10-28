@@ -23,7 +23,9 @@
     {:style ui/button,
      :on-click (fn [e d! m!]
        (let [new-token (.generate shortid)]
-         (d! action/create (merge schema/message {:token new-token, :text (lorem-ipsum)}))
+         (d!
+          action/create
+          (merge schema/message {:token new-token, :text (lorem-ipsum/loremIpsum)}))
          (js/setTimeout (fn [] (d! action/remove-one {:token new-token})) 2000)))}
     (<> "Try"))
    (=< 16 nil)
