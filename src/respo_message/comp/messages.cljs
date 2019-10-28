@@ -1,7 +1,6 @@
 
 (ns respo-message.comp.messages
   (:require [respo.core :refer [defcomp list-> div span <>]]
-            [respo.core :refer [create-comp]]
             [respo-message.comp.message :refer [comp-message]]))
 
 (defcomp
