@@ -9,7 +9,8 @@
             ["lorem-ipsum" :as lorem-ipsum]
             ["shortid" :as shortid]
             [respo-message.updater :refer [update-messages]]
-            [respo-message.action :as action]))
+            [respo-message.action :as action]
+            [respo-message.config :as config]))
 
 (defonce *id (atom 0))
 
@@ -18,7 +19,7 @@
 (defonce *store (atom schema/store))
 
 (defn dispatch! [op op-data]
-  (println "dispatch!" op op-data)
+  (when config/dev? (println "Dispatch:" op))
   (let [op-id (.generate shortid), op-time (.now js/Date), store @*store]
     (reset!
      *store
@@ -38,16 +39,15 @@
 (def ssr? (some? (.querySelector js/document "meta.respo-app")))
 
 (defn main! []
+  (println "Running mode:" (if config/dev? "dev" "release"))
   (if ssr? (render-app! realize-ssr!))
   (render-app! render!)
   (add-watch *store :changes (fn [] (render-app! render!)))
-  (js/setTimeout (fn [] (dispatch! action/create {:text (lorem-ipsum)})))
+  (js/setTimeout (fn [] (dispatch! action/create {:text (lorem-ipsum/loremIpsum)})))
   (println "app started!"))
 
 (defn reload! []
   (clear-cache!)
   (render-app! render!)
   (println "Code update.")
-  (dispatch! action/create {:text (lorem-ipsum)}))
-
-(set! (.-onload js/window) main!)
+  (dispatch! action/create {:text (lorem-ipsum/loremIpsum)}))
