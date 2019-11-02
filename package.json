@@ -17,7 +17,7 @@
   "devDependencies": {
     "http-server": "^0.11.1",
     "lorem-ipsum": "^2.0.3",
-    "shadow-cljs": "^2.8.67"
+    "shadow-cljs": "^2.8.69"
   },
   "dependencies": {
     "shortid": "^2.2.15"
