@@ -1,7 +1,7 @@
 
 {:pom {:group-id "respo",
        :artifact-id "message",
-       :version "0.3.5",
+       :version "0.3.6-a1",
        :name "Message component on the right top"}
  :packaging {:jar {:enabled true
                    :remote-repository {:id "clojars"

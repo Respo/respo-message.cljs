@@ -1,9 +1,27 @@
 
 (ns respo-message.comp.message
-  (:require [respo.core :refer [defcomp div <> span]]
+  (:require [respo.core :refer [defcomp div <> span defeffect]]
             [respo-ui.core :as ui]
             [hsl.core :refer [hsl]]
-            [respo-message.schema :as schema]))
+            [respo-message.schema :as schema]
+            [cumulo-util.core :refer [delay!]]))
+
+(defeffect
+ effect-fade
+ (message)
+ (action el *local)
+ (case action
+   :mount
+     (let [style (.-style el)]
+       (set! (.-right style) "60px")
+       (set! (.-opacity style) "0")
+       (delay! 0.01 (fn [] (set! (.-right style) "8px") (set! (.-opacity style) "1"))))
+   :unmount
+     (let [cloned (.cloneNode el true), style (.-style cloned)]
+       (.appendChild (.-parentElement el) cloned)
+       (delay! 0.01 (fn [] (set! (.-right style) "60px") (set! (.-opacity style) "0")))
+       (delay! 0.3 (fn [] (.remove cloned))))
+   (do)))
 
 (def style-message
   {:position :absolute,
@@ -24,21 +42,22 @@
    :text-overflow :ellipsis,
    :max-width 320,
    :cursor :pointer,
-   :transition-duration "400ms"})
+   :transition-duration "300ms"})
 
 (defcomp
  comp-message
  (idx message options on-remove!)
- (div
-  {:style (merge
-           style-message
-           (:style message)
-           (if (:bottom? options)
-             {:bottom 8, :transform (str "translate(0," (- (* idx 40)) "px)")}
-             {:top 8, :transform (str "translate(0," (* idx 40) "px)")})),
-   :on-click (fn [e d! m!]
-     (on-remove!
-      {:id (:id message), :token (:token message), :index idx, :time (:time message)}
-      d!
-      m!))}
-  (<> span (:text message) nil)))
+ [(effect-fade message)
+  (div
+   {:style (merge
+            style-message
+            (:style message)
+            (if (:bottom? options)
+              {:bottom 8, :transform (str "translate(0," (- (* idx 44)) "px)")}
+              {:top 8, :transform (str "translate(0," (* idx 40) "px)")})),
+    :on-click (fn [e d! m!]
+      (on-remove!
+       {:id (:id message), :token (:token message), :index idx, :time (:time message)}
+       d!
+       m!))}
+   (<> span (:text message) nil))])
