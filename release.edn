@@ -1,0 +1,6 @@
+{:version "0.3.6"
+ :group-id "respo"
+ :artifact-id "message"
+ :skip-tag true
+ :description "Message component on the right top"
+ :scm-url "https://github.com/Respo/respo-message"}

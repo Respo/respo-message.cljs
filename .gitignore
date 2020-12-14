@@ -5,3 +5,6 @@
 .shadow-cljs/
 .nrepl-port
 *.xml
+
+.cpcache/
+trace.edn
