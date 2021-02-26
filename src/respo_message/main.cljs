@@ -1,7 +1,7 @@
 
 (ns respo-message.main
   (:require [respo.core :refer [render! clear-cache! realize-ssr!]]
-            [respo.cursor :refer [mutate]]
+            [respo.cursor :refer [update-states]]
             [respo.util.format :refer [mute-element]]
             [respo-message.comp.container :refer [comp-container]]
             [cljs.reader :refer [read-string]]
@@ -24,7 +24,7 @@
     (reset!
      *store
      (cond
-       (= op :states) (update store :states (mutate op-data))
+       (= op :states) (update-states store op-data)
        (action/message-action? op)
          (update store :messages #(update-messages % op op-data op-id op-time))
        :else (do (println "Unhandled operation:" op) store)))))
